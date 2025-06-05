@@ -6,6 +6,9 @@ import math
 from english_words import get_english_words_set as gew #provides set of bulk english words
 englishSet = gew(['web2'], lower=True)
 
+class YouBrokeSomething(Exception): #used for testing and raising errors
+    pass
+
 def encodeCaseInfo(caesarInput):
     encryptedSnapshot = list(caesarInput) #string to list will be used to work with ASCII information
 
@@ -18,9 +21,21 @@ def encodeCaseInfo(caesarInput):
         else: encodedLetterCase.append(letter) #maintains current symbol if not english alphabet, use to catch errors later
     return encodedLetterCase
 
+def decodeCaseInfo(solvedCipher, encodedLetterCase): #reconnects case information with decoded string
+    decryptedCipher = list(solvedCipher)
+    if not (len(decryptedCipher) == len(encodedLetterCase)):
+        raise YouBrokeSomething('lost information; caps encoding != decrypted length')
+    capSortedFinal = []
+    for letter in range(len(decryptedCipher)):
+        if encodedLetterCase[letter] == True:
+            capSortedFinal.append(decryptedCipher[letter].upper())
+        else: capSortedFinal.append(decryptedCipher[letter])
+    capSortedFinal = ''.join(capSortedFinal)
+    return capSortedFinal
+
 def loopCaesarValues(shiftValue, digit): #input letter & shift value, output new letter
-    while shiftValue>25:
-        shiftValue-=26
+    if shiftValue>25 or shiftValue<0:
+        raise YouBrokeSomething('caesar shift value loop not functioning; shift value out of expected range')
     output = digit + shiftValue
     if output>122:
         output = output-26
@@ -53,15 +68,13 @@ def cutNonAlphas(string): #cuts out nonalphabeticals for english comparison
         if ord(item)>=97 and ord(item)<=122 or ord(item)==32: #catches lowercase letters or a space
             outputString = outputString + expandedList[step]
         step+=1
-    #print(outputString)
     return outputString
 
-def englishComparison(manyList):
+def englishComparison(manyList): #creates a probability based on word length and 
     probabilityList = []
     for cipherOption in manyList:
         accurateWords = 0
         cipherWords = cutNonAlphas(cipherOption).split(' ')
-        print(cipherWords)
         for word in cipherWords:
             if word in englishSet:
                 accurateWords+=1
@@ -73,8 +86,6 @@ def englishComparison(manyList):
             maxProb = probability
             cipherNum = steps
         steps+=1
-        #print([cipherNum, maxProb])
-    #print(probabilityList)
     return cipherNum
     
 def caesarSolve():
@@ -82,8 +93,7 @@ def caesarSolve():
     encodedLetterCase = encodeCaseInfo(caesarInput) #encoded information about case of letters
     manyList = bruteForceShift(caesarInput) #list of strings corresponding to each possible caeser shift
     cipherNum = englishComparison(manyList)
-    #print(manyList[cipherNum])
-    #print(encodedLetterCase)
-    #print(manyList)
-    return manyList[cipherNum]
+    decryptedSolution = decodeCaseInfo(manyList[cipherNum], encodedLetterCase)
+    print(decryptedSolution)
+    return
 caesarSolve()
