@@ -2,6 +2,7 @@
 CS1100 (Intro to python) from Sophia Learning LLC."""
 # See https://github.com/Kkoder27/SophiaPythonTouchstone for more information
 
+import testList
 import math
 from english_words import get_english_words_set as gew #provides set of bulk english words
 englishSet = gew(['web2'], lower=True)
