@@ -1,7 +1,4 @@
-testList = [
-    {'cipher': '',
-     'shift':0,
-     'decrypted':''},
+unitTestList = [
     {'cipher': 'Slma vm aol uvyt',
      'shift':7,
      'decrypted':'Left of the norm'},

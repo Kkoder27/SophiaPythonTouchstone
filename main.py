@@ -2,13 +2,21 @@
 CS1100 (Intro to python) from Sophia Learning LLC."""
 # See https://github.com/Kkoder27/SophiaPythonTouchstone for more information
 
-import testList
+from testList import unitTestList
 import math
 from english_words import get_english_words_set as gew #provides set of bulk english words
 englishSet = gew(['web2'], lower=True)
 
 class YouBrokeSomething(Exception): #used for testing and raising errors
     pass
+
+def TestCases():
+    testvalue = 0
+    for test in range(len(unitTestList)):
+       sample = caesarSolve(unitTestList[test]['cipher'])
+       if sample == unitTestList[test]['decrypted']:
+           testvalue+=1
+    print(testvalue)
 
 def encodeCaseInfo(caesarInput):
     encryptedSnapshot = list(caesarInput) #string to list will be used to work with ASCII information
@@ -43,18 +51,18 @@ def loopCaesarValues(shiftValue, digit): #input letter & shift value, output new
     return output
 
 def bruteForceShift(caesarInput): #takes string, and turns into list of strings for each caeser shift
-    testList = []
+    BFList = []
     for item in list(caesarInput.lower()): #list of letters to list of ASCII numerals
-        testList.append(ord(item))
+        BFList.append(ord(item))
     outputArr = []
     for num in range(26):
         tempList = []
         shiftValue = num
         step = 0
-        for digit in testList:
+        for digit in BFList:
             if digit>=97 and digit<=122:
                 tempList.append(chr(loopCaesarValues(shiftValue, digit)))
-            else: tempList.append(chr(testList[step]))
+            else: tempList.append(chr(BFList[step]))
             step+=1
         outputArr.append(tempList)
     for arr in range(len(outputArr)):
@@ -87,14 +95,22 @@ def englishComparison(manyList): #creates a probability based on word length and
             maxProb = probability
             cipherNum = steps
         steps+=1
-    return cipherNum
+    return [cipherNum, maxProb]
     
-def caesarSolve():
-    caesarInput = input('Input encrypted string to be solved')
+def caesarSolve(value = None):
+    if value == None:
+        caesarInput = input('Input encrypted string to be solved')
+    else: caesarInput = value
+    if caesarInput == '!TEST': #input to test against test cases (very secret shh)
+        TestCases()
+        return
     encodedLetterCase = encodeCaseInfo(caesarInput) #encoded information about case of letters
     manyList = bruteForceShift(caesarInput) #list of strings corresponding to each possible caeser shift
-    cipherNum = englishComparison(manyList)
-    decryptedSolution = decodeCaseInfo(manyList[cipherNum], encodedLetterCase)
+    comparisonOutput = englishComparison(manyList)
+    decryptedSolution = decodeCaseInfo(manyList[comparisonOutput[0]], encodedLetterCase)
+    print('Cipher steps: ' + str(26-comparisonOutput[0]))
+    print('Probability of correctness: ' + str(comparisonOutput[1]))
+    print('Solution:')
     print(decryptedSolution)
-    return
+    return [decryptedSolution]
 caesarSolve()
