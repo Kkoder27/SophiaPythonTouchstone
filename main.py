@@ -10,7 +10,7 @@ englishSet = gew(['web2'], lower=True)
 class YouBrokeSomething(Exception): #used for testing and raising errors
     pass
 
-def TestCases():
+def TestCases(): #loops through test list of known ciphers for verification purposes
     testvalue = 0
     for test in range(len(unitTestList)):
        sample = caesarSolve(unitTestList[test]['cipher'])
